@@ -32,7 +32,12 @@ end
 u0 = [start_angle, start_angular_velocity, start_positon, start_velocity]
 tspan = (0.0, T)
 prob = ODEProblem(f, u0, tspan)
-sol = solve(prob)
+
+condition(u, t, integrator) = (u[1] > pi / 2 || u[1] < -pi / 2)
+affect!(integrator) = terminate!(integrator)
+cb = DiscreteCallback(condition, affect!)
+
+sol = solve(prob, callback=cb)
 
 diff_plot = plot(sol, labels=["θ" "ω" "x" "v"], layout=4)
 savefig(diff_plot, "plot.png")
